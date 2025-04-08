@@ -1,54 +1,64 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import type { Team } from "@/lib/db"
-import { editTeam } from "./action"
-import toast from "react-hot-toast"
+import { useState } from "react";
+import type { Team } from "@/lib/db";
+import { editTeam } from "./action";
+import toast from "react-hot-toast";
 
 interface EditTeamDialogProps {
-  team: Team
-  onClose: () => void
-  onTeamUpdated: (team: Team) => void
+  team: Team;
+  onClose: () => void;
+  onTeamUpdated: (team: Team) => void;
 }
 
-export default function EditTeamDialog({ team, onClose, onTeamUpdated }: EditTeamDialogProps) {
-  const [name, setName] = useState(team.name)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export default function EditTeamDialog({
+  team,
+  onClose,
+  onTeamUpdated,
+}: EditTeamDialogProps) {
+  const [name, setName] = useState(team.name);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    const formData = new FormData()
-    formData.append("name", name)
+    const formData = new FormData();
+    formData.append("name", name);
 
-    const result = await editTeam(team.id, formData)
+    const result = await editTeam(team.id, formData);
 
-    setIsSubmitting(false)
+    setIsSubmitting(false);
 
     if (result.success) {
       const updatedTeam = {
         ...team,
         name,
-      }
-      onTeamUpdated(updatedTeam)
-      onClose()
-      toast.success(result.message)
+      };
+      onTeamUpdated(updatedTeam);
+      onClose();
+      toast.success(result.message);
     } else {
-      toast.error(result.message)
+      toast.error(result.message);
     }
-  }
+  };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}>
+    <div
+      className="fixed inset-0 flex items-center justify-center z-50"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
+    >
       <div className="bg-white rounded-lg p-6 max-w-md w-full">
         <h2 className="text-xl font-semibold mb-4">Edit Team</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="edit-name" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="edit-name"
+              className="block text-sm font-medium text-gray-700"
+            >
               Team Name
             </label>
             <input
@@ -81,6 +91,5 @@ export default function EditTeamDialog({ team, onClose, onTeamUpdated }: EditTea
         </form>
       </div>
     </div>
-  )
+  );
 }
-

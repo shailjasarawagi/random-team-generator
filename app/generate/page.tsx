@@ -1,27 +1,24 @@
-"use client"
+"use client";
 
-import { getTeams, getPlayers } from "@/lib/db"
-import TeamGenerator from "./team-generators"
-import { useEffect, useState } from "react"
-import toast from "react-hot-toast"
+import { getTeams, getPlayers } from "@/lib/db";
+import TeamGenerator from "./team-generators";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-export default  function GeneratePage() {
+export default function GeneratePage() {
+  const [teams, setTeams] = useState([]);
+  const [players, setPlayers] = useState([]);
 
-  const [teams,setTeams]= useState([])
-  const [players,setPlayers]= useState([])
-
-useEffect(()=>{
+  useEffect(() => {
     const fetchSessions = async () => {
-    const result = await getTeams()  as any
-    const results = await getPlayers() as any
-    setTeams(result)
-    setPlayers(results)
-   
-  }
+      const result = (await getTeams()) as any;
+      const results = (await getPlayers()) as any;
+      setTeams(result);
+      setPlayers(results);
+    };
 
-  fetchSessions()
-},[])
-
+    fetchSessions();
+  }, []);
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -29,6 +26,5 @@ useEffect(()=>{
 
       <TeamGenerator initialTeams={teams} initialPlayers={players} />
     </div>
-  )
+  );
 }
-

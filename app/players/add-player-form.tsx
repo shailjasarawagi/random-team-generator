@@ -1,49 +1,52 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { addPlayer } from "./action"
-import toast from "react-hot-toast"
+import { useState } from "react";
+import { addPlayer } from "./action";
+import toast from "react-hot-toast";
 
 // Add onPlayerAdded prop to the component
 interface AddPlayerFormProps {
-  onPlayerAdded: () => void
+  onPlayerAdded: () => void;
 }
 
 export default function AddPlayerForm({ onPlayerAdded }: AddPlayerFormProps) {
-  const [name, setName] = useState("")
-  const [skill, setSkill] = useState("3")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [name, setName] = useState("");
+  const [skill, setSkill] = useState("3");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    const formData = new FormData()
-    formData.append("name", name)
-    formData.append("skill", skill)
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("skill", skill);
 
-    const result = await addPlayer(formData)
+    const result = await addPlayer(formData);
 
-    setIsSubmitting(false)
+    setIsSubmitting(false);
 
     if (result.success) {
-      setName("")
-      setSkill("3")
-      toast.success(result.message)
-      onPlayerAdded() // Call the callback to refresh the list
+      setName("");
+      setSkill("3");
+      toast.success(result.message);
+      onPlayerAdded(); // Call the callback to refresh the list
     } else {
-      toast.error(result.message)
+      toast.error(result.message);
     }
-  }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold mb-4">Add New Player</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
             Player Name
           </label>
           <input
@@ -58,7 +61,10 @@ export default function AddPlayerForm({ onPlayerAdded }: AddPlayerFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="skill" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="skill"
+            className="block text-sm font-medium text-gray-700"
+          >
             Skill Level (1-5)
           </label>
           <select
@@ -84,6 +90,5 @@ export default function AddPlayerForm({ onPlayerAdded }: AddPlayerFormProps) {
         </button>
       </form>
     </div>
-  )
+  );
 }
-

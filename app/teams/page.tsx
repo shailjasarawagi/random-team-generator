@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { getTeams } from "@/lib/db"
-import TeamList from "./team-list"
-import AddTeamForm from "./add-team-form"
-import type { Team } from "@/lib/db"
+import { useEffect, useState } from "react";
+import { getTeams } from "@/lib/db";
+import TeamList from "./team-list";
+import AddTeamForm from "./add-team-form";
+import type { Team } from "@/lib/db";
 
 export default function TeamsPage() {
-  const [teams, setTeams] = useState<Team[]>([])
-  const [refreshKey, setRefreshKey] = useState(0)
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchTeams = async () => {
-      const fetchedTeams = await getTeams()
-      setTeams(fetchedTeams)
-    }
+      const fetchedTeams = await getTeams();
+      setTeams(fetchedTeams);
+    };
 
-    fetchTeams()
-  }, [refreshKey])
+    fetchTeams();
+  }, [refreshKey]);
 
   const handleTeamChanged = () => {
-    setRefreshKey((prev) => prev + 1)
-  }
+    setRefreshKey((prev) => prev + 1);
+  };
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -37,6 +37,5 @@ export default function TeamsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,5 +1,5 @@
-import Link from "next/link"
-import { Users, ListPlus, Shuffle, Home } from "lucide-react"
+import Link from "next/link";
+import { Users, ListPlus, Shuffle, Home } from "lucide-react";
 
 export default function Navbar() {
   return (
@@ -11,25 +11,36 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition">
+          <Link
+            href="/"
+            className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition"
+          >
             <Home className="h-4 w-4" />
             Home
           </Link>
-          <Link href="/players" className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition">
+          <Link
+            href="/players"
+            className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition"
+          >
             <Users className="h-4 w-4" />
             Players
           </Link>
-          <Link href="/teams" className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition">
+          <Link
+            href="/teams"
+            className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition"
+          >
             <ListPlus className="h-4 w-4" />
             Teams
           </Link>
-          <Link href="/generate" className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition">
+          <Link
+            href="/generate"
+            className="flex items-center gap-1 text-sm font-medium hover:text-blue-600 transition"
+          >
             <Shuffle className="h-4 w-4" />
             Generate
           </Link>
         </div>
       </div>
     </nav>
-  )
+  );
 }
-

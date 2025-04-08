@@ -1,52 +1,59 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { type Player, type Team, type GeneratedSession, getGeneratedSessions, getSessionByPublicId } from "@/lib/db"
-import { createTeamGeneration } from "./action"
-import toast from "react-hot-toast"
-import GeneratedTeamDisplay from "./generated-team-display"
-import PreviousGenerations from "./previous-generators"
+import { useState } from "react";
+import {
+  type Player,
+  type Team,
+  type GeneratedSession,
+  getGeneratedSessions,
+  getSessionByPublicId,
+} from "@/lib/db";
+import { createTeamGeneration } from "./action";
+import toast from "react-hot-toast";
+import GeneratedTeamDisplay from "./generated-team-display";
+import PreviousGenerations from "./previous-generators";
 
 interface TeamGeneratorProps {
-  initialTeams: Team[]
-  initialPlayers: Player[]
+  initialTeams: Team[];
+  initialPlayers: Player[];
 }
 
-export default function TeamGenerator({ initialTeams, initialPlayers }: TeamGeneratorProps) {
-  const [title, setTitle] = useState("")
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedSession, setGeneratedSession] = useState<GeneratedSession | null>(null)
-  const [activeTab, setActiveTab] = useState("generate")
+export default function TeamGenerator({
+  initialTeams,
+  initialPlayers,
+}: TeamGeneratorProps) {
+  const [title, setTitle] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedSession, setGeneratedSession] =
+    useState<GeneratedSession | null>(null);
+  const [activeTab, setActiveTab] = useState("generate");
 
   const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-
-    if (initialTeams.length <2) {
-      toast.error("You need at least 2 teams before generating")
-      return
+    if (initialTeams.length < 2) {
+      toast.error("You need at least 2 teams before generating");
+      return;
     }
 
-    if (initialPlayers.length <2) {
-      toast.error("You need at least 2 players before generating")
-      return
+    if (initialPlayers.length < 2) {
+      toast.error("You need at least 2 players before generating");
+      return;
     }
 
-    setIsGenerating(true)
-    const result = await createTeamGeneration(title) as any
-    setIsGenerating(false)
+    setIsGenerating(true);
+    const result = (await createTeamGeneration(title)) as any;
+    setIsGenerating(false);
 
-     if (result.success) {
-      setGeneratedSession(result.data)
-      toast.success(result.message)
+    if (result.success) {
+      setGeneratedSession(result.data);
+      toast.success(result.message);
     } else {
-      toast.error(result.message)
+      toast.error(result.message);
     }
-
-  }
-
+  };
 
   return (
     <div className="space-y-6">
@@ -78,11 +85,16 @@ export default function TeamGenerator({ initialTeams, initialPlayers }: TeamGene
           <div className="p-6 space-y-6">
             <div className="bg-white rounded-lg">
               <h2 className="text-xl font-semibold mb-2">Team Generator</h2>
-              <p className="text-gray-500 mb-4">Generate balanced teams based on player skill levels</p>
+              <p className="text-gray-500 mb-4">
+                Generate balanced teams based on player skill levels
+              </p>
 
               <form onSubmit={handleGenerate} className="space-y-4">
                 <div className="space-y-2">
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="title"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Generation Title
                   </label>
                   <input
@@ -100,7 +112,9 @@ export default function TeamGenerator({ initialTeams, initialPlayers }: TeamGene
                   <div className="p-4 border rounded-lg">
                     <h3 className="font-medium mb-2">Available Teams</h3>
                     {initialTeams.length === 0 ? (
-                      <p className="text-sm text-gray-500">No teams available</p>
+                      <p className="text-sm text-gray-500">
+                        No teams available
+                      </p>
                     ) : (
                       <ul className="space-y-1">
                         {initialTeams.map((team) => (
@@ -115,9 +129,13 @@ export default function TeamGenerator({ initialTeams, initialPlayers }: TeamGene
                   <div className="p-4 border rounded-lg">
                     <h3 className="font-medium mb-2">Available Players</h3>
                     {initialPlayers.length === 0 ? (
-                      <p className="text-sm text-gray-500">No players available</p>
+                      <p className="text-sm text-gray-500">
+                        No players available
+                      </p>
                     ) : (
-                      <p className="text-sm">{initialPlayers.length} players available</p>
+                      <p className="text-sm">
+                        {initialPlayers.length} players available
+                      </p>
                     )}
                   </div>
                 </div>
@@ -132,7 +150,9 @@ export default function TeamGenerator({ initialTeams, initialPlayers }: TeamGene
               </form>
             </div>
 
-            {generatedSession && <GeneratedTeamDisplay session={generatedSession} />}
+            {generatedSession && (
+              <GeneratedTeamDisplay session={generatedSession} />
+            )}
           </div>
         ) : (
           <div className="p-6">
@@ -141,6 +161,5 @@ export default function TeamGenerator({ initialTeams, initialPlayers }: TeamGene
         )}
       </div>
     </div>
-  )
+  );
 }
-

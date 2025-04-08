@@ -1,28 +1,28 @@
 // Change the component to be a client component so we can use hooks
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { getPlayers } from "@/lib/db"
-import PlayerList from "./player-list"
-import AddPlayerForm from "./add-player-form"
-import type { Player } from "@/lib/db"
+import { useEffect, useState } from "react";
+import { getPlayers } from "@/lib/db";
+import PlayerList from "./player-list";
+import AddPlayerForm from "./add-player-form";
+import type { Player } from "@/lib/db";
 
 export default function PlayersPage() {
-  const [players, setPlayers] = useState<Player[]>([])
-  const [refreshKey, setRefreshKey] = useState(0)
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchPlayers = async () => {
-      const fetchedPlayers = await getPlayers()
-      setPlayers(fetchedPlayers)
-    }
+      const fetchedPlayers = await getPlayers();
+      setPlayers(fetchedPlayers);
+    };
 
-    fetchPlayers()
-  }, [refreshKey])
+    fetchPlayers();
+  }, [refreshKey]);
 
   const handlePlayerAdded = () => {
-    setRefreshKey((prev) => prev + 1)
-  }
+    setRefreshKey((prev) => prev + 1);
+  };
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -30,7 +30,10 @@ export default function PlayersPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
-          <PlayerList initialPlayers={players} onPlayerDeleted={handlePlayerAdded} />
+          <PlayerList
+            initialPlayers={players}
+            onPlayerDeleted={handlePlayerAdded}
+          />
         </div>
 
         <div>
@@ -38,6 +41,5 @@ export default function PlayersPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
