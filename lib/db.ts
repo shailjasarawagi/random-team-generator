@@ -24,8 +24,30 @@ export type GeneratedSession = {
 
 let players: Player[] = [];
 let teams: Team[] = [];
-const generatedSessions: GeneratedSession[] = [];
+let generatedSessions: GeneratedSession[] = [];
 
+const initializeFromStorage = () => {
+  if (typeof window !== "undefined") {
+    const storedSessions = localStorage.getItem("generatedSessions")
+    if (storedSessions) {
+      try {
+        generatedSessions = JSON.parse(storedSessions)
+      } catch (e) {
+        console.error("Failed to parse stored sessions:", e)
+      }
+    }
+  }
+}
+
+
+const saveSessionsToStorage = () => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("generatedSessions", JSON.stringify(generatedSessions))
+  }
+}
+
+// Initialize from storage
+initializeFromStorage()
 // Player CRUD operations
 export async function getPlayers(): Promise<Player[]> {
   return [...players];
@@ -139,10 +161,10 @@ export async function generateTeams(
   if (hasDuplicate) {
     return "Duplicate generated teams found. Please use unique names for each team.";
   }
-  // Sort players by skill level (descending)
+ 
   const sortedPlayers = [...players].sort((a, b) => b.skill - a.skill);
 
-  // Initialize team assignments
+ 
   const teamAssignments = teams.map((team) => ({
     teamId: team.id,
     teamName: team.name,
@@ -150,17 +172,15 @@ export async function generateTeams(
     averageSkill: 0,
   }));
 
-  // Distribute players using snake draft pattern
+
   let direction = 1;
   let currentTeamIndex = 0;
 
   for (const player of sortedPlayers) {
     teamAssignments[currentTeamIndex].players.push(player);
 
-    // Move to next team
     currentTeamIndex += direction;
 
-    // Change direction if we reached the end or beginning
     if (currentTeamIndex >= teamAssignments.length) {
       currentTeamIndex = teamAssignments.length - 2;
       direction = -1;
@@ -170,7 +190,6 @@ export async function generateTeams(
     }
   }
 
-  // Calculate average skill for each team
   for (const team of teamAssignments) {
     if (team.players.length > 0) {
       const totalSkill = team.players.reduce(
@@ -183,7 +202,7 @@ export async function generateTeams(
     }
   }
 
-  // Create and save the generated session
+
   const publicId = Math.random().toString(36).substring(2, 12);
   const newSession: GeneratedSession = {
     id: Math.random().toString(36).substring(2, 9),
@@ -192,8 +211,9 @@ export async function generateTeams(
     publicId,
     teamAssignments,
   };
-
+ 
   generatedSessions.push(newSession);
+  saveSessionsToStorage()
   return newSession;
 }
 
@@ -201,11 +221,13 @@ export async function generateTeams(
 export async function getSessionByPublicId(
   publicId: string
 ): Promise<GeneratedSession | undefined> {
+  initializeFromStorage()
   return generatedSessions.find((session) => session.publicId === publicId);
 }
 
 // Get all generated sessions
 export async function getGeneratedSessions(): Promise<GeneratedSession[]> {
+  initializeFromStorage()
   return [...generatedSessions];
 }
 

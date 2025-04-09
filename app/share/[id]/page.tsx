@@ -3,6 +3,7 @@ import { getSessionByPublicId } from "@/lib/db";
 import { notFound } from "next/navigation";
 import { Star } from "lucide-react";
 import { use, useEffect, useState } from "react";
+import Link from "next/link";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -10,19 +11,53 @@ type Props = {
 
 export default function SharedTeamPage({ params }: Props) {
   const [session, setSessions] = useState({} as any);
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const { id } = use(params);
   useEffect(() => {
-    const fetchPlayers = async () => {
-      const sessions = await getSessionByPublicId(id);
-      setSessions(sessions);
-    };
+    const fetchSession = async () => {
+      try {
+        const fetchedSession = await getSessionByPublicId(id)
+        if (fetchedSession) {
+          setSessions(fetchedSession)
+        } else {
+          setError(true)
+        }
+      } catch (err) {
+        console.error("Error fetching session:", err)
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-    fetchPlayers();
-  }, []);
-
-  if (!session) {
-    notFound();
+    fetchSession()
+  }, [id]);
+  if (loading) {
+    return (
+      <div className="container mx-auto py-10 px-4 text-center">
+        <div className="bg-white rounded-lg shadow-md p-10">
+          <p>Loading team data...</p>
+        </div>
+      </div>
+    )
   }
+  if (error || !session) {
+    return (
+      <div className="container mx-auto py-10 px-4 text-center">
+        <div className="bg-white rounded-lg shadow-md p-10">
+          <h1 className="text-2xl font-bold mb-4">Team Not Found</h1>
+          <p className="mb-6">The team you're looking for doesn't exist or has been removed.</p>
+          <Link href="/">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+              Return to Home
+            </button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   // Format date
   const formattedDate = new Date(session.date).toLocaleDateString("en-US", {
     year: "numeric",
