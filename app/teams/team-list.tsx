@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Team } from "@/lib/db";
+import type { Team } from "@/lib/types";
 import { Pencil, Trash2 } from "lucide-react";
 import { removeTeam } from "./action";
 import toast from "react-hot-toast";
 import EditTeamDialog from "./edit-team-dialog";
+import ConfirmDialog from "@/components/UI/confirm-dialog";
 
 interface TeamListProps {
   initialTeams: Team[];
@@ -43,7 +44,7 @@ export default function TeamList({
     if (result.success) {
       setTeams(teams.filter((t) => t.id !== selectedTeam.id));
       toast.success(result.message);
-      onTeamDeleted(); // Call the callback to refresh the list
+      onTeamDeleted();
     } else {
       toast.error(result.message);
     }
@@ -53,7 +54,7 @@ export default function TeamList({
 
   const handleTeamUpdated = (updatedTeam: Team) => {
     setTeams(teams.map((t) => (t.id === updatedTeam.id ? updatedTeam : t)));
-    onTeamDeleted(); // Call the callback to refresh the list
+    onTeamDeleted();
   };
 
   return (
@@ -92,37 +93,16 @@ export default function TeamList({
         )}
       </div>
 
-      {/* Delete Confirmation Dialog */}
-      {showDeleteConfirm && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
-        >
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold mb-2">Are you sure?</h3>
-            <p className="text-gray-500 mb-4">
-              This will permanently delete {selectedTeam?.name} from the team
-              list.
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition"
-                onClick={() => setShowDeleteConfirm(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                onClick={handleDeleteConfirm}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Player"
+        message={`Are you sure you want to delete ${selectedTeam?.name}? This action cannot be undone.`}
+        confirmLabel={"Delete"}
+        confirmVariant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
 
-      {/* Edit Team Dialog */}
       {showEditDialog && selectedTeam && (
         <EditTeamDialog
           team={selectedTeam}

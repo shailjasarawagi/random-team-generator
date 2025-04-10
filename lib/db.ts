@@ -1,54 +1,54 @@
-export type Player = {
-  id: string;
-  name: string;
-  skill: number;
-};
-
-export type Team = {
-  id: string;
-  name: string;
-};
-
-export type GeneratedSession = {
-  id: string;
-  title: string;
-  date: string;
-  publicId: string;
-  teamAssignments: {
-    teamId: string;
-    teamName: string;
-    players: Player[];
-    averageSkill: number;
-  }[];
-};
+import { GeneratedSession, Player, PlayerFormData, Team } from "./types";
 
 let players: Player[] = [];
 let teams: Team[] = [];
 let generatedSessions: GeneratedSession[] = [];
 
+export async function initializeDb() {
+  if (players.length === 0 && teams.length === 0) {
+    players = [
+      { id: "1", name: "Player 1", skill: 5 },
+      { id: "2", name: "Player 2", skill: 1 },
+      { id: "3", name: "Player 3", skill: 3 },
+      { id: "4", name: "Player 4", skill: 4 },
+      { id: "5", name: "Player 5", skill: 2 },
+      { id: "6", name: "Player 6", skill: 4 },
+      { id: "7", name: "Player 7", skill: 3 },
+      { id: "8", name: "Player 8", skill: 5 },
+    ];
+
+    teams = [
+      { id: "1", name: "Red Team" },
+      { id: "2", name: "Blue Team" },
+    ];
+  }
+}
+
+initializeDb();
+
 const initializeFromStorage = () => {
   if (typeof window !== "undefined") {
-    const storedSessions = localStorage.getItem("generatedSessions")
+    const storedSessions = localStorage.getItem("generatedSessions");
     if (storedSessions) {
       try {
-        generatedSessions = JSON.parse(storedSessions)
+        generatedSessions = JSON.parse(storedSessions);
       } catch (e) {
-        console.error("Failed to parse stored sessions:", e)
+        console.error("Failed to parse stored sessions:", e);
       }
     }
   }
-}
-
+};
 
 const saveSessionsToStorage = () => {
   if (typeof window !== "undefined") {
-    localStorage.setItem("generatedSessions", JSON.stringify(generatedSessions))
+    localStorage.setItem(
+      "generatedSessions",
+      JSON.stringify(generatedSessions)
+    );
   }
-}
+};
 
-// Initialize from storage
-initializeFromStorage()
-// Player CRUD operations
+initializeFromStorage();
 export async function getPlayers(): Promise<Player[]> {
   return [...players];
 }
@@ -57,10 +57,8 @@ export async function getPlayer(id: string): Promise<Player | undefined> {
   return players.find((player) => player.id === id);
 }
 
-export async function createPlayer(
-  name: string,
-  skill: number
-): Promise<Player> {
+export async function createPlayer(data: PlayerFormData): Promise<Player> {
+  const { name, skill } = data;
   const newPlayer = {
     id: Math.random().toString(36).substring(2, 9),
     name,
@@ -72,9 +70,9 @@ export async function createPlayer(
 
 export async function updatePlayer(
   id: string,
-  name: string,
-  skill: number
+  data: PlayerFormData
 ): Promise<Player | null> {
+  const { name, skill } = data;
   const index = players.findIndex((player) => player.id === id);
   if (index === -1) return null;
 
@@ -94,7 +92,6 @@ export async function deletePlayer(id: string): Promise<boolean> {
   return initialLength !== players.length;
 }
 
-// Team CRUD operations
 export async function getTeams(): Promise<Team[]> {
   return [...teams];
 }
@@ -149,7 +146,6 @@ export async function deleteTeam(id: string): Promise<boolean> {
   return initialLength !== teams.length;
 }
 
-// Team generation
 export async function generateTeams(
   title: string
 ): Promise<GeneratedSession | null | string> {
@@ -161,17 +157,15 @@ export async function generateTeams(
   if (hasDuplicate) {
     return "Duplicate generated teams found. Please use unique names for each team.";
   }
- 
+
   const sortedPlayers = [...players].sort((a, b) => b.skill - a.skill);
 
- 
   const teamAssignments = teams.map((team) => ({
     teamId: team.id,
     teamName: team.name,
     players: [] as Player[],
     averageSkill: 0,
   }));
-
 
   let direction = 1;
   let currentTeamIndex = 0;
@@ -202,7 +196,6 @@ export async function generateTeams(
     }
   }
 
-
   const publicId = Math.random().toString(36).substring(2, 12);
   const newSession: GeneratedSession = {
     id: Math.random().toString(36).substring(2, 9),
@@ -211,48 +204,20 @@ export async function generateTeams(
     publicId,
     teamAssignments,
   };
- 
+
   generatedSessions.push(newSession);
-  saveSessionsToStorage()
+  saveSessionsToStorage();
   return newSession;
 }
 
-// Get generated session by public ID
 export async function getSessionByPublicId(
   publicId: string
 ): Promise<GeneratedSession | undefined> {
-  initializeFromStorage()
+  initializeFromStorage();
   return generatedSessions.find((session) => session.publicId === publicId);
 }
 
-// Get all generated sessions
 export async function getGeneratedSessions(): Promise<GeneratedSession[]> {
-  initializeFromStorage()
+  initializeFromStorage();
   return [...generatedSessions];
 }
-
-// Initialize with some sample data
-export async function initializeDb() {
-  if (players.length === 0 && teams.length === 0) {
-    // Sample players
-    players = [
-      { id: "1", name: "Player 1", skill: 5 },
-      { id: "2", name: "Player 2", skill: 1 },
-      { id: "3", name: "Player 3", skill: 3 },
-      { id: "4", name: "Player 4", skill: 4 },
-      { id: "5", name: "Player 5", skill: 2 },
-      { id: "6", name: "Player 6", skill: 4 },
-      { id: "7", name: "Player 7", skill: 3 },
-      { id: "8", name: "Player 8", skill: 5 },
-    ];
-
-    // Sample teams
-    teams = [
-      { id: "1", name: "Red Team" },
-      { id: "2", name: "Blue Team" },
-    ];
-  }
-}
-
-// Initialize the database
-initializeDb();

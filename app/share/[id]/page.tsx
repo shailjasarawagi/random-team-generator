@@ -1,83 +1,68 @@
 "use client";
 import { getSessionByPublicId } from "@/lib/db";
-import { notFound } from "next/navigation";
-import { Star } from "lucide-react";
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-
+import Loading from "@/components/UI/loading";
+import SkillStars from "@/components/UI/skill-stars";
+import { Home } from "lucide-react";
+import type { GeneratedSession } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 type Props = {
   params: Promise<{ id: string }>;
 };
 
 export default function SharedTeamPage({ params }: Props) {
-  const [session, setSessions] = useState({} as any);
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [session, setSessions] = useState<GeneratedSession | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { id } = use(params);
+
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const fetchedSession = await getSessionByPublicId(id)
+        const fetchedSession = await getSessionByPublicId(id);
         if (fetchedSession) {
-          setSessions(fetchedSession)
+          setSessions(fetchedSession);
         } else {
-          setError(true)
+          setError(true);
         }
       } catch (err) {
-        console.error("Error fetching session:", err)
-        setError(true)
+        console.error("Error fetching session:", err);
+        setError(true);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchSession()
+    fetchSession();
   }, [id]);
   if (loading) {
     return (
-      <div className="container mx-auto py-10 px-4 text-center">
-        <div className="bg-white rounded-lg shadow-md p-10">
-          <p>Loading team data...</p>
-        </div>
+      <div className="container mx-auto py-10 px-4">
+        <Loading message="Loading team data..." />
       </div>
-    )
+    );
   }
   if (error || !session) {
     return (
       <div className="container mx-auto py-10 px-4 text-center">
         <div className="bg-white rounded-lg shadow-md p-10">
           <h1 className="text-2xl font-bold mb-4">Team Not Found</h1>
-          <p className="mb-6">The team you're looking for doesn't exist or has been removed.</p>
+          <p className="mb-6">
+            The team you're looking for doesn't exist or has been removed.
+          </p>
           <Link href="/">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition inline-flex items-center gap-2">
+              <Home className="h-4 w-4" />
               Return to Home
             </button>
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
-  // Format date
-  const formattedDate = new Date(session.date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-
-  // Render stars for skill level
-  const renderSkillStars = (skill: number) => {
-    return Array(5)
-      .fill(0)
-      .map((_, i) => (
-        <Star
-          key={i}
-          className={`h-3 w-3 ${
-            i < skill ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
-          }`}
-        />
-      ));
-  };
+  const formattedDate = formatDate(session.date);
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -115,9 +100,7 @@ export default function SharedTeamPage({ params }: Props) {
                         className="flex items-center justify-between text-sm p-2 border-b last:border-0"
                       >
                         <span>{player.name}</span>
-                        <div className="flex">
-                          {renderSkillStars(player.skill)}
-                        </div>
+                        <SkillStars skill={player.skill} size="sm" />
                       </li>
                     ))}
                   </ul>

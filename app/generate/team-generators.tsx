@@ -3,17 +3,13 @@
 import type React from "react";
 
 import { useState } from "react";
-import {
-  type Player,
-  type Team,
-  type GeneratedSession,
-  getGeneratedSessions,
-  getSessionByPublicId,
-} from "@/lib/db";
+import { type Player, type Team, type GeneratedSession } from "@/lib/types";
 import { createTeamGeneration } from "./action";
 import toast from "react-hot-toast";
 import GeneratedTeamDisplay from "./generated-team-display";
 import PreviousGenerations from "./previous-generators";
+import EmptyState from "@/components/UI/empty-state";
+import { Users, ListPlus } from "lucide-react";
 
 interface TeamGeneratorProps {
   initialTeams: Team[];
@@ -112,9 +108,11 @@ export default function TeamGenerator({
                   <div className="p-4 border rounded-lg">
                     <h3 className="font-medium mb-2">Available Teams</h3>
                     {initialTeams.length === 0 ? (
-                      <p className="text-sm text-gray-500">
-                        No teams available
-                      </p>
+                      <EmptyState
+                        title="No Teams"
+                        message="Add teams first"
+                        icon={<ListPlus className="h-8 w-8 text-gray-400" />}
+                      />
                     ) : (
                       <ul className="space-y-1">
                         {initialTeams.map((team) => (
@@ -129,9 +127,11 @@ export default function TeamGenerator({
                   <div className="p-4 border rounded-lg">
                     <h3 className="font-medium mb-2">Available Players</h3>
                     {initialPlayers.length === 0 ? (
-                      <p className="text-sm text-gray-500">
-                        No players available
-                      </p>
+                      <EmptyState
+                        title="No Players"
+                        message="Add players first"
+                        icon={<Users className="h-8 w-8 text-gray-400" />}
+                      />
                     ) : (
                       <p className="text-sm">
                         {initialPlayers.length} players available
@@ -143,7 +143,11 @@ export default function TeamGenerator({
                 <button
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition"
-                  disabled={isGenerating}
+                  disabled={
+                    isGenerating ||
+                    initialPlayers?.length == 0 ||
+                    initialTeams?.length == 0
+                  }
                 >
                   {isGenerating ? "Generating..." : "Generate Teams"}
                 </button>

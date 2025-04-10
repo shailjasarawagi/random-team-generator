@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import type { Player } from "@/lib/db";
+import type { Player } from "@/lib/types";
 import { editPlayer } from "./action";
 import toast from "react-hot-toast";
 

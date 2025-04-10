@@ -1,8 +1,10 @@
 "use client";
 
-import type { GeneratedSession } from "@/lib/db";
-import { Star, Share2 } from "lucide-react";
+import type { GeneratedSession } from "@/lib/types";
+import { Share2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { formatDate, calculateBalanceScore } from "@/lib/utils";
+import SkillStars from "@/components/UI/skill-stars";
 
 interface GeneratedTeamDisplayProps {
   session: GeneratedSession;
@@ -13,37 +15,52 @@ export default function GeneratedTeamDisplay({
 }: GeneratedTeamDisplayProps) {
   const handleShareLink = () => {
     const shareUrl = `${window.location.origin}/share/${session.publicId}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Share link has been copied to clipboard");
+
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(shareUrl)
+        .then(() => toast.success("Share link has been copied to clipboard"))
+        .catch(() => {
+          promptForCopy(shareUrl);
+        });
+    } else {
+      promptForCopy(shareUrl);
+    }
+  };
+  const balanceScore = calculateBalanceScore(session.teamAssignments);
+  const balanceQuality =
+    balanceScore < 0.3
+      ? "Excellent"
+      : balanceScore < 0.7
+      ? "Good"
+      : balanceScore < 1.0
+      ? "Fair"
+      : "Poor";
+
+  const promptForCopy = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      toast.success("Share link has been copied to clipboard");
+    } catch (err) {
+      toast.error("Failed to copy link. Please copy it manually: " + text);
+    }
+
+    document.body.removeChild(textArea);
   };
 
-  // Format date
-  const formattedDate = new Date(session.date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-
-  // Render stars for skill level
-  const renderSkillStars = (skill: number) => {
-    return Array(5)
-      .fill(0)
-      .map((_, i) => (
-        <Star
-          key={i}
-          className={`h-3 w-3 ${
-            i < skill ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
-          }`}
-        />
-      ));
-  };
+  const formattedDate = formatDate(session.date);
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="p-6 border-b">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold">{session?.title}</h2>
+            <h2 className="text-xl font-semibold">{session.title}</h2>
             <p className="text-sm text-gray-500">
               Generated on {formattedDate}
             </p>
@@ -55,6 +72,19 @@ export default function GeneratedTeamDisplay({
             <Share2 className="h-4 w-4" />
             Share
           </button>
+        </div>
+      </div>
+
+      <div className="p-4 bg-blue-50 border-b">
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-blue-700">
+            <span className="font-medium">Balance Quality:</span>{" "}
+            {balanceQuality}
+          </p>
+          <p className="text-sm text-blue-700">
+            <span className="font-medium">Teams:</span>{" "}
+            {session.teamAssignments.length}
+          </p>
         </div>
       </div>
 
@@ -81,10 +111,8 @@ export default function GeneratedTeamDisplay({
                       key={player.id}
                       className="flex items-center justify-between text-sm p-2 border-b last:border-0"
                     >
-                      <span>{player.name}</span>
-                      <div className="flex">
-                        {renderSkillStars(player.skill)}
-                      </div>
+                      <span>{player?.name}</span>
+                      <SkillStars skill={player?.skill} size="sm" />
                     </li>
                   ))}
                 </ul>

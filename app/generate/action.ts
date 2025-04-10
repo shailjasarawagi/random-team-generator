@@ -1,5 +1,3 @@
-// "use server"
-
 import { generateTeams, getGeneratedSessions } from "@/lib/db";
 
 export async function createTeamGeneration(title: string) {

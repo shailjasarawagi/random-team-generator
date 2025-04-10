@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getTeams } from "@/lib/db";
 import TeamList from "./team-list";
 import AddTeamForm from "./add-team-form";
-import type { Team } from "@/lib/db";
+import type { Team } from "@/lib/types";
 
 export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);

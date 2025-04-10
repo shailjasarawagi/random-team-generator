@@ -3,7 +3,6 @@
 import { getTeams, getPlayers } from "@/lib/db";
 import TeamGenerator from "./team-generators";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 export default function GeneratePage() {
   const [teams, setTeams] = useState([]);

@@ -1,44 +1,66 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { GeneratedSession } from "@/lib/db";
-import { Share2, ChevronRight } from "lucide-react";
+import type { GeneratedSession } from "@/lib/types";
+import { Share2, ChevronRight, Clock } from "lucide-react";
 import { getAllGeneratedSessions } from "./action";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { formatDate } from "@/lib/utils";
+import EmptyState from "@/components/UI/empty-state";
 
 export default function PreviousGenerations() {
   const [sessions, setSessions] = useState<GeneratedSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSessions = async () => {
-      const result = (await getAllGeneratedSessions()) as any;
-      if (result.success) {
-        setSessions(result.data);
-      } else {
-        toast.error(result.message || "Failed to fetch previous generations");
+      try {
+        const result = await getAllGeneratedSessions();
+
+        if (result.success && result.data) {
+          setSessions(result.data);
+        } else {
+          setError(result.message || "Failed to fetch previous generations");
+          toast.error(result.message || "Failed to fetch previous generations");
+        }
+      } catch (error) {
+        console.error("Error fetching sessions:", error);
+        setError("An unexpected error occurred");
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     };
-
     fetchSessions();
   }, []);
 
   const handleShareLink = (publicId: string) => {
     const shareUrl = `${window.location.origin}/share/${publicId}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Share link has been copied to clipboard");
-  };
 
-  // Format date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    if (navigator.clipboard) {
+      navigator.clipboard
+        .writeText(shareUrl)
+        .then(() => toast.success("Share link has been copied to clipboard"))
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+          toast.error("Failed to copy link");
+        });
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        toast.success("Share link has been copied to clipboard");
+      } catch (err) {
+        toast.error("Failed to copy link");
+      }
+
+      document.body.removeChild(textArea);
+    }
   };
 
   if (isLoading) {
@@ -48,12 +70,20 @@ export default function PreviousGenerations() {
       </div>
     );
   }
-
+  if (error) {
+    return (
+      <div className="py-4 px-6 bg-red-50 border border-red-200 rounded-md text-red-700">
+        <p>{error}</p>
+      </div>
+    );
+  }
   if (sessions.length === 0) {
     return (
-      <div className="py-10 text-center">
-        <p className="text-gray-500">No previous team generations found</p>
-      </div>
+      <EmptyState
+        title="No Previous Generations"
+        message="Generate your first team to see it here"
+        icon={<Clock className="h-12 w-12 text-gray-400" />}
+      />
     );
   }
 

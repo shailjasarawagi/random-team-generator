@@ -6,7 +6,6 @@ import { useState } from "react";
 import { addTeam } from "./action";
 import toast from "react-hot-toast";
 
-// Add onTeamAdded prop to the component
 interface AddTeamFormProps {
   onTeamAdded: () => void;
 }
@@ -29,7 +28,7 @@ export default function AddTeamForm({ onTeamAdded }: AddTeamFormProps) {
     if (result.success) {
       setName("");
       toast.success(result.message);
-      onTeamAdded(); // Call the callback to refresh the list
+      onTeamAdded();
     } else {
       toast.error(result.message);
     }

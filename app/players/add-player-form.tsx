@@ -6,7 +6,6 @@ import { useState } from "react";
 import { addPlayer } from "./action";
 import toast from "react-hot-toast";
 
-// Add onPlayerAdded prop to the component
 interface AddPlayerFormProps {
   onPlayerAdded: () => void;
 }
@@ -32,7 +31,7 @@ export default function AddPlayerForm({ onPlayerAdded }: AddPlayerFormProps) {
       setName("");
       setSkill("3");
       toast.success(result.message);
-      onPlayerAdded(); // Call the callback to refresh the list
+      onPlayerAdded();
     } else {
       toast.error(result.message);
     }

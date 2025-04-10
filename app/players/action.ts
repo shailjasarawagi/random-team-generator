@@ -1,4 +1,5 @@
 import { createPlayer, updatePlayer, deletePlayer } from "@/lib/db";
+import type { PlayerFormData } from "@/lib/types";
 
 export async function addPlayer(formData: FormData) {
   const name = formData.get("name") as string;
@@ -14,7 +15,8 @@ export async function addPlayer(formData: FormData) {
   }
 
   try {
-    await createPlayer(name, skill);
+    const data: PlayerFormData = { name, skill };
+    await createPlayer(data);
     return { success: true, message: "Player added successfully" };
   } catch (error) {
     return { success: false, message: "Failed to add player" };
@@ -35,7 +37,8 @@ export async function editPlayer(id: string, formData: FormData) {
   }
 
   try {
-    const result = await updatePlayer(id, name, skill);
+    const data: PlayerFormData = { name, skill };
+    const result = await updatePlayer(id, data);
     if (!result) {
       return { success: false, message: "Player not found" };
     }

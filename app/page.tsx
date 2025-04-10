@@ -63,6 +63,47 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <div className="mt-16 max-w-3xl mx-auto bg-blue-50 p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-3">How It Works</h2>
+        <div className="space-y-4">
+          <div className="flex gap-3">
+            <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+              <span className="font-semibold">1</span>
+            </div>
+            <div>
+              <h3 className="font-medium">Add Players</h3>
+              <p className="text-gray-600">
+                Create a roster of players and assign skill levels from 1 to 5
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+              <span className="font-semibold">2</span>
+            </div>
+            <div>
+              <h3 className="font-medium">Create Teams</h3>
+              <p className="text-gray-600">
+                Set up the teams you want to distribute players into
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
+              <span className="font-semibold">3</span>
+            </div>
+            <div>
+              <h3 className="font-medium">Generate & Share</h3>
+              <p className="text-gray-600">
+                Generate balanced teams and share the results with a public link
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
