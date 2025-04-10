@@ -46,21 +46,7 @@ export default function PreviousGenerations() {
           console.error("Failed to copy:", err);
           toast.error("Failed to copy link");
         });
-    } else {
-      const textArea = document.createElement("textarea");
-      textArea.value = shareUrl;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        toast.success("Share link has been copied to clipboard");
-      } catch (err) {
-        toast.error("Failed to copy link");
-      }
-
-      document.body.removeChild(textArea);
-    }
+    } 
   };
 
   if (isLoading) {

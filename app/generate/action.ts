@@ -7,7 +7,6 @@ export async function createTeamGeneration(title: string) {
 
   try {
     const result = await generateTeams(title);
-
     if (!result) {
       return {
         success: false,

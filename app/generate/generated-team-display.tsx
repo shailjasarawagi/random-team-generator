@@ -13,18 +13,17 @@ interface GeneratedTeamDisplayProps {
 export default function GeneratedTeamDisplay({
   session,
 }: GeneratedTeamDisplayProps) {
+
+
   const handleShareLink = () => {
     const shareUrl = `${window.location.origin}/share/${session.publicId}`;
-
     if (navigator.clipboard) {
       navigator.clipboard
         .writeText(shareUrl)
         .then(() => toast.success("Share link has been copied to clipboard"))
         .catch(() => {
-          promptForCopy(shareUrl);
+            toast.error("Failed to copy link. Please copy it manually: ");   
         });
-    } else {
-      promptForCopy(shareUrl);
     }
   };
   const balanceScore = calculateBalanceScore(session.teamAssignments);
@@ -37,21 +36,7 @@ export default function GeneratedTeamDisplay({
       ? "Fair"
       : "Poor";
 
-  const promptForCopy = (text: string) => {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    try {
-      toast.success("Share link has been copied to clipboard");
-    } catch (err) {
-      toast.error("Failed to copy link. Please copy it manually: " + text);
-    }
 
-    document.body.removeChild(textArea);
-  };
 
   const formattedDate = formatDate(session.date);
 
